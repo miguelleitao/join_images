@@ -1,5 +1,6 @@
 join_images
 peak_count
+deglitch
 
 out*
 *.pgm

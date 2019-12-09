@@ -10,6 +10,7 @@
 #include <netpbm/pam.h>
 
 int TopDown = 1;
+int debug = 1;
 
 void Usage(char *app_name) {
     fprintf(stderr,"Usage: %s [options] infile1 infile2 [outfile1 [outfile2]]\n", app_name);
@@ -43,7 +44,7 @@ int main(int argc, char **argv) {
         argc--;
         argv++;
     }
-    
+    printf("TopDown: %d\n", TopDown);
     FILE *fin1 = NULL;
     if ( argv[1] )
         fin1 = fopen(argv[1], "r");
@@ -74,9 +75,18 @@ int main(int argc, char **argv) {
        for (column = 0; column < inpam1.width; ++column) {
            unsigned int plane;
            for (plane = 0; plane < inpam1.depth; ++plane) {
-               if ( tuples1[row][column][plane]>60000 || tuples1[row][column][plane]<1 ) 
+               if ( tuples1[row][column][plane]>60000 || tuples1[row][column][plane]<1 ) {
                    count1++;
-               if ( tuples2[row][column][plane]>60000 || tuples2[row][column][plane]<1 ) count2++;
+                   if ( debug ) 
+                       fprintf(stderr,"Over height sample in image1 %d %d %d: %ld\n", row, column, plane,
+                           tuples1[row][column][plane]);
+               }
+               if ( tuples2[row][column][plane]>60000 || tuples2[row][column][plane]<1 ) {
+                   count2++;
+                   if ( debug ) 
+                       fprintf(stderr,"Over height sample in image2 %d %d %d: %ld\n", row, column, plane, 
+                           tuples2[row][column][plane]);
+               }
            }
        }
    }
@@ -95,8 +105,9 @@ int main(int argc, char **argv) {
         }
         else {      // Left to Right
             unsigned int row;
-            for (row = 0; row < inpam1.height; ++row) 
+            for (row = 0; row < inpam1.height; ++row) {
                 diff += abs(tuples1[row][inpam1.width-1][plane] - tuples2[row][0][plane]);
+            }
         }
     }
     

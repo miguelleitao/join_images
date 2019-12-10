@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
     }
     
     fprintf(stderr,"Diff: %ld \n", diff);
-    if ( diff > 280000L ) {
+    if ( diff > 300000L ) {
         fprintf(stderr, "Too large joint error. Exiting\n");
         exit(1);
     }
@@ -139,13 +139,13 @@ int main(int argc, char **argv) {
 
                 for (row = 0 ; row<inpam1.height / 2 && d!=0 ; row++ ) {
                     d = round((float)delta/2. - ddelta*row) ;
-                    tuples1[inpam1.height-1-row][column][plane] += d;
-                    tuples2[                row][column][plane] -= d;
+                    tuples1[inpam1.height-1-row][column][plane] -= d;
+                    tuples2[                row][column][plane] += d;
                 }
                 int new_delta = (unsigned short)(tuples1[inpam1.height-1][column][plane]) 
                             - (unsigned short)(tuples2[0][column][plane]);
             
-                if ( abs(new_delta)>0 )
+                if ( abs(new_delta)>1 )
                     fprintf(stderr,"%d,%d: Delta %d -> %d\n", column, plane, delta, new_delta);
             }
         }
@@ -168,13 +168,13 @@ int main(int argc, char **argv) {
                 int column;
                 for (column = 0 ; column<inpam1.width / 2 && d!=0 ; column++ ) {
                     d = round((float)delta/2. - ddelta*column) ;
-                    tuples1[row][inpam1.width-1-column][plane] += d;
-                    tuples2[row][               column][plane] -= d;
+                    tuples1[row][inpam1.width-1-column][plane] -= d;
+                    tuples2[row][               column][plane] += d;
                 }
                 int new_delta = (unsigned short)(tuples1[row][inpam1.width-1][plane]) 
                               - (unsigned short)(tuples2[row][0][plane]);
             
-                if ( abs(new_delta)>0 )
+                if ( abs(new_delta)>1 )
                     fprintf(stderr,"%d,%d: Delta %d -> %d\n", row, plane, delta, new_delta);
             }
         }

@@ -11,7 +11,7 @@ all: ${PROGS}
 	wget -q ${SITE}$@
 
 %.hgt: %.hgt.zip
-	unzip -f $<
+	unzip -u $<
 
 %.png: %.hgt
 	${HGT2PNG} a $< ./ 1201 1201

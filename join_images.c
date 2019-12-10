@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
     }
     
     fprintf(stderr,"Diff: %ld \n", diff);
-    if ( diff > 200000L ) {
+    if ( diff > 280000L ) {
         fprintf(stderr, "Too large joint error. Exiting\n");
         exit(1);
     }

@@ -134,13 +134,17 @@ int main(int argc, char **argv) {
                 }
                     
                 int delta = tuples1[inpam1.height-1][column][plane] - tuples2[0][column][plane];
-                float ddelta = (float)delta / (float)inpam1.height / 2.0;
-                int d = delta/2;
+                float ddelta = 2. * (float)delta / (float)inpam1.height;
+                float d = delta;
+printf("Corrigindo delta %d, dd %f\n", delta,ddelta);
+                for (row = 0 ; row<inpam1.height / 2 && fabs(d)>0.5; row++ ) {
+                    d = (float)delta - ddelta*row ;
+                    int d1 = d/2.;
+                    int d2 = round(d-d1);
 
-                for (row = 0 ; row<inpam1.height / 2 && d!=0 ; row++ ) {
-                    d = round((float)delta/2. - ddelta*row) ;
-                    tuples1[inpam1.height-1-row][column][plane] -= d;
-                    tuples2[                row][column][plane] += d;
+printf("    Corr %d %d\n", d1,d2);
+                    tuples1[inpam1.height-1-row][column][plane] -= d1;
+                    tuples2[                row][column][plane] += d2;
                 }
                 int new_delta = (unsigned short)(tuples1[inpam1.height-1][column][plane]) 
                             - (unsigned short)(tuples2[0][column][plane]);
@@ -162,14 +166,16 @@ int main(int argc, char **argv) {
                 }
                     
                 int delta = tuples1[row][inpam1.width-1][plane] - tuples2[row][0][plane];
-                float ddelta = (float)delta / (float)inpam1.width / 2.0;
-                int d = delta/2;
+                float ddelta = (float)delta / (float)inpam1.width;
+                float d = delta;
                 
                 int column;
-                for (column = 0 ; column<inpam1.width / 2 && d!=0 ; column++ ) {
-                    d = round((float)delta/2. - ddelta*column) ;
-                    tuples1[row][inpam1.width-1-column][plane] -= d;
-                    tuples2[row][               column][plane] += d;
+                for (column = 0 ; column<inpam1.width / 2 && fabs(d)>0.5 ; column++ ) {
+                    d = delta - ddelta*column;
+                    int d1 = d/2.;
+                    int d2 = round(d-d1);
+                    tuples1[row][inpam1.width-1-column][plane] -= d1;
+                    tuples2[row][               column][plane] += d2;
                 }
                 int new_delta = (unsigned short)(tuples1[row][inpam1.width-1][plane]) 
                               - (unsigned short)(tuples2[row][0][plane]);

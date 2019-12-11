@@ -86,6 +86,10 @@ int main(int argc, char **argv) {
         pm_close(fin);
         fprintf(stderr,"Input file: %dx%dx%d\n", inpam.width, inpam.height, inpam.depth);
     }
+    else {
+        fprintf(stderr, "Cannot read image '%s'\n", argv[1]);
+        exit(1);
+    }
 
    // Count saturated (errored) samples in image
    int count=0;
@@ -107,6 +111,35 @@ int main(int argc, char **argv) {
        }
    }
    fprintf(stderr,"Count: %d over heighted samples in image.\n", count);
+   
+   unsigned int plane;
+   for (plane = 0; plane < inpam.depth; ++plane) {
+        unsigned int column;
+        long master_total = 0L;
+        long totals[10];
+        for (column = 0; column < inpam.width && column < 10 ; ++column) {
+            long total = 0L;
+            for (row = 0; row < inpam.height; ++row) {
+                total += tuples[row][column][plane];
+            }
+            master_total += total;
+            totals[column] = total;
+            printf("Column %d, total %ld\n", column, total);
+        }
+        for (column = 0; column < inpam.width && column < 3 ; ++column) {
+            long total = 0;
+            for (row = 0; row < inpam.height ; ++row) {
+                tuples[row][column][plane] -= (totals[column]-master_total/10)/inpam.height;
+                total += tuples[row][column][plane];
+            }
+            printf("Column %d, total %ld -> %ld\n", column, totals[column], total);
+        }
+   }
+   
+   
+   
+   
+   
    
    // Verify declive
    count = 0;
@@ -130,6 +163,7 @@ int main(int argc, char **argv) {
        }
    }
    fprintf(stderr,"Count: %d large declives.\n", count);
+ 
 
     // Write out image 
     FILE *fout = fopen(argv[2],"w");

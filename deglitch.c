@@ -108,7 +108,28 @@ int main(int argc, char **argv) {
    }
    fprintf(stderr,"Count: %d over heighted samples in image.\n", count);
    
-   fprintf(stderr, "Border saturated samples corrected: %d\n", count); 
+   // Verify declive
+   count = 0;
+   for (row = 0; row < inpam.height; ++row) {
+       unsigned int column;
+       for (column = 0; column < inpam.width; ++column) {
+           unsigned int plane;
+           for (plane = 0; plane < inpam.depth; ++plane) {
+               if ( row>0 && abs(tuples[row][column][plane]-tuples[row-1][column][plane]) > 100 ) {
+                   count++;
+                   fprintf(stderr,"Falesia row %d %d %d: %ld %ld\n", row, column, plane,
+                           tuples[row][column][plane], tuples[row-1][column][plane]);
+               }
+               if ( column>0 && abs(tuples[row][column][plane]-tuples[row][column-1][plane]) > 100 ) {
+                   count++;
+                   fprintf(stderr,"Falesia column %d %d %d: %ld %ld\n", row, column, plane,
+                           tuples[row][column][plane], tuples[row][column-1][plane]);
+               }
+               
+           }
+       }
+   }
+   fprintf(stderr,"Count: %d large declives.\n", count);
 
     // Write out image 
     FILE *fout = fopen(argv[2],"w");

@@ -174,14 +174,16 @@ printf("    Corr %d %d\n", d1,d2);
                 }
                     
                 int delta = tuples1[row][inpam1.width-1][plane] - tuples2[row][0][plane];
-                float ddelta = (float)delta / (float)inpam1.width;
+                float ddelta = 2. * (float)delta / (float)inpam1.width;
                 float d = delta;
                 
+if ( abs(delta)>0) printf("Corrigindo sbs delta %d, dd %f\n", delta,ddelta);
                 int column;
                 for (column = 0 ; column<inpam1.width / 2 && fabs(d)>0.5 ; column++ ) {
                     d = delta - ddelta*column;
                     int d1 = round(d)/2;
                     int d2 = round(d)-d1;
+printf("    Corr %d %d\n", d1,d2);
                     tuples1[row][inpam1.width-1-column][plane] -= d1;
                     tuples2[row][               column][plane] += d2;
                 }

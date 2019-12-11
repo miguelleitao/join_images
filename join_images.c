@@ -139,8 +139,8 @@ int main(int argc, char **argv) {
 printf("Corrigindo delta %d, dd %f\n", delta,ddelta);
                 for (row = 0 ; row<inpam1.height / 2 && fabs(d)>0.5; row++ ) {
                     d = (float)delta - ddelta*row ;
-                    int d1 = d/2.;
-                    int d2 = round(d-d1);
+                    int d1 = round(d)/2;
+                    int d2 = round(d)-d1;
 
 printf("    Corr %d %d\n", d1,d2);
                     tuples1[inpam1.height-1-row][column][plane] -= d1;
@@ -172,8 +172,8 @@ printf("    Corr %d %d\n", d1,d2);
                 int column;
                 for (column = 0 ; column<inpam1.width / 2 && fabs(d)>0.5 ; column++ ) {
                     d = delta - ddelta*column;
-                    int d1 = d/2.;
-                    int d2 = round(d-d1);
+                    int d1 = round(d)/2;
+                    int d2 = round(d)-d1;
                     tuples1[row][inpam1.width-1-column][plane] -= d1;
                     tuples2[row][               column][plane] += d2;
                 }

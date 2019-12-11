@@ -10,6 +10,7 @@
 #include <netpbm/pam.h>
 
 int TopDown = 1;
+int modeForce = 0;
 int debug = 1;
 
 void Usage(char *app_name) {
@@ -21,6 +22,7 @@ void Usage(char *app_name) {
     fprintf(stderr,"            outfile2 :   Output file 2. Adjusted bottom (or right) image.\n");
     fprintf(stderr,"    Options:\n");
     fprintf(stderr,"            -h :  This usage message.\n");
+    fprintf(stderr,"            -f :  Force adjusting even with very different images.\n");
     fprintf(stderr,"            -s :  Side-by-side method.\n\n");
 }
 
@@ -39,6 +41,9 @@ int main(int argc, char **argv) {
                 exit(1);
             case 's':
                 TopDown = 0;
+                break;
+            case 'f':
+                modeForce = 1;
                 break;
         }
         argc--;
@@ -113,8 +118,11 @@ int main(int argc, char **argv) {
     
     fprintf(stderr,"Diff: %ld \n", diff);
     if ( diff > 300000L ) {
-        fprintf(stderr, "Too large joint error. Exiting\n");
-        exit(1);
+        fprintf(stderr, "Too large joint error.\n");
+        if ( !modeForce ) {
+            fprintf(stderr,"Exiting.\n");
+            exit(1);
+        }
     }
    
     count1 = count2 = 0;
@@ -136,7 +144,7 @@ int main(int argc, char **argv) {
                 int delta = tuples1[inpam1.height-1][column][plane] - tuples2[0][column][plane];
                 float ddelta = 2. * (float)delta / (float)inpam1.height;
                 float d = delta;
-printf("Corrigindo delta %d, dd %f\n", delta,ddelta);
+if ( abs(delta)>0) printf("Corrigindo delta %d, dd %f\n", delta,ddelta);
                 for (row = 0 ; row<inpam1.height / 2 && fabs(d)>0.5; row++ ) {
                     d = (float)delta - ddelta*row ;
                     int d1 = round(d)/2;

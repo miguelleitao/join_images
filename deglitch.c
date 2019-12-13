@@ -112,6 +112,8 @@ int main(int argc, char **argv) {
    }
    fprintf(stderr,"Count: %d over heighted samples in image.\n", count);
    
+   
+   // correct column 1
    unsigned int plane;
    for (plane = 0; plane < inpam.depth; ++plane) {
         unsigned int column;
@@ -126,14 +128,28 @@ int main(int argc, char **argv) {
             totals[column] = total;
             printf("Column %d, total %ld\n", column, total);
         }
-        for (column = 0; column < inpam.width && column < 3 ; ++column) {
+        master_total -= totals[0];
+        master_total -= totals[1];
+        master_total -= totals[2];
+        master_total -= totals[3];
+        for (column = 0; column < inpam.width && column < 4 ; ++column) {
             long total = 0;
             for (row = 0; row < inpam.height ; ++row) {
-                tuples[row][column][plane] -= (totals[column]-master_total/10)/inpam.height;
+                tuples[row][column][plane] -= (totals[column]-master_total/6)/inpam.height;
                 total += tuples[row][column][plane];
+                long delta = tuples[row][column][plane] - tuples[row][column+1][plane];
+                for( int c=column ; c>=0 && abs(delta)>10 ; c-- ) {
+                    if ( delta>0. )
+                        tuples[row][c][plane] = tuples[row][c+1][plane] + 10;
+                    else
+                        tuples[row][c][plane] = tuples[row][c+1][plane] - 10;
+                    if ( c==0 ) break;
+                    delta = tuples[row][c-1][plane] - tuples[row][c][plane];
+                }
             }
             printf("Column %d, total %ld -> %ld\n", column, totals[column], total);
         }
+        //tuples[1000][3][plane] = 60000;
    }
    
    
@@ -150,13 +166,13 @@ int main(int argc, char **argv) {
            for (plane = 0; plane < inpam.depth; ++plane) {
                if ( row>0 && abs(tuples[row][column][plane]-tuples[row-1][column][plane]) > 100 ) {
                    count++;
-                   fprintf(stderr,"Falesia row %d %d %d: %ld %ld\n", row, column, plane,
-                           tuples[row][column][plane], tuples[row-1][column][plane]);
+                   //fprintf(stderr,"Falesia row %d %d %d: %ld %ld\n", row, column, plane,
+                     //      tuples[row][column][plane], tuples[row-1][column][plane]);
                }
                if ( column>0 && abs(tuples[row][column][plane]-tuples[row][column-1][plane]) > 100 ) {
                    count++;
-                   fprintf(stderr,"Falesia column %d %d %d: %ld %ld\n", row, column, plane,
-                           tuples[row][column][plane], tuples[row][column-1][plane]);
+                   //fprintf(stderr,"Falesia column %d %d %d: %ld %ld\n", row, column, plane,
+                           //tuples[row][column][plane], tuples[row][column-1][plane]);
                }
                
            }

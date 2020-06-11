@@ -70,12 +70,12 @@ int main(int argc, char **argv) {
         fprintf(stderr,"Input file2: %dx%dx%d\n", inpam2.width, inpam2.height, inpam2.depth);
     }
 
-   // Count saturated (errored) samples in images
-   int count1=0;
-   int count2=0;
+    // Count saturated (errored) samples in images
+    int count1=0;
+    int count2=0;
    
-   unsigned int row;
-   for (row = 0; row < inpam1.height; ++row) {
+    unsigned int row;
+    for (row = 0; row < inpam1.height; ++row) {
        unsigned int column;
        for (column = 0; column < inpam1.width; ++column) {
            unsigned int plane;
@@ -94,9 +94,9 @@ int main(int argc, char **argv) {
                }
            }
        }
-   }
-   fprintf(stderr,"Count: %d over heighted samples in image 1.\n", count1);
-   fprintf(stderr,"Count: %d over heighted samples in image 2.\n", count2);
+    }
+    fprintf(stderr,"Count: %d over heighted samples in image 1.\n", count1);
+    fprintf(stderr,"Count: %d over heighted samples in image 2.\n", count2);
    
     // Evaluate joint differences
     unsigned long diff = 0L; 
@@ -144,13 +144,13 @@ int main(int argc, char **argv) {
                 int delta = tuples1[inpam1.height-1][column][plane] - tuples2[0][column][plane];
                 float ddelta = 2. * (float)delta / (float)inpam1.height;
                 float d = delta;
-//if ( abs(delta)>0) printf("Corrigindo delta %d, dd %f\n", delta,ddelta);
+		//if ( abs(delta)>0) printf("Correct delta %d, dd %f\n", delta, ddelta);
                 for (row = 0 ; row<inpam1.height / 2 && fabs(d)>0.5; row++ ) {
                     d = (float)delta - ddelta*row ;
                     int d1 = round(d)/2;
                     int d2 = round(d)-d1;
 
-//printf("    Corr %d %d\n", d1,d2);
+		    //printf("    Corr %d %d\n", d1,d2);
                     tuples1[inpam1.height-1-row][column][plane] -= d1;
                     tuples2[                row][column][plane] += d2;
                 }
@@ -177,7 +177,8 @@ int main(int argc, char **argv) {
                 float ddelta = 2. * (float)delta / (float)inpam1.width;
                 float d = delta;
                 
-if ( abs(delta)>0) printf("Corrigindo sbs delta %d, dd %f\n", delta,ddelta);
+		if ( abs(delta)>0) 
+			printf("Corrigindo sbs delta %d, dd %f\n", delta,ddelta);
                 int column;
                 for (column = 0 ; column<inpam1.width / 2 && fabs(d)>0.5 ; column++ ) {
                     d = delta - ddelta*column;
@@ -195,9 +196,9 @@ if ( abs(delta)>0) printf("Corrigindo sbs delta %d, dd %f\n", delta,ddelta);
                     fprintf(stderr,"%d,%d: Delta %d -> %d\n", row, plane, delta, new_delta);
             }
         }
-   }
+    }
    
-   fprintf(stderr, "Border saturated samples corrected: %d %d\n", count1, count2); 
+    fprintf(stderr, "Border saturated samples corrected: %d %d\n", count1, count2); 
 
     // Write out image 1
     FILE *fout1 = fopen(argv[3],"w");
@@ -220,3 +221,4 @@ if ( abs(delta)>0) printf("Corrigindo sbs delta %d, dd %f\n", delta,ddelta);
     pnm_freepamarray(tuples1, &inpam1);
     pnm_freepamarray(tuples2, &inpam2);
 }
+
